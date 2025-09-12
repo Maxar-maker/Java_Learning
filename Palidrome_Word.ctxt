@@ -1,0 +1,7 @@
+#BlueJ class context
+comment0.target=Palidrome_Word
+comment1.params=word
+comment1.target=java.lang.String\ PalindromeChecker(java.lang.String)
+comment2.params=
+comment2.target=void\ main()
+numComments=3
