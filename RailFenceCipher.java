@@ -1,124 +1,104 @@
 import java.util.*;
-public class RailFenceCipher
-{
-    String s1="";
-    String s2="";
-    String s3="";
-    String str="WeFoundYouRun";
-    int max=0;
-    String arr[][]=new String [3][18];
-    public void max()
-    {
-        if(s1.length()>s2.length())
-        {
-            if(s1.length()>s3.length())
-            {
-                max= s1.length();
-            }
-            else
-            {
-                max= s3.length();
-            }
-        }
-        else
-        {
-            if(s2.length()>s3.length())
-            {
-                max= s2.length();
-            }
-            else
-            {
-                max= s3.length();
-            }
-        }
+
+public class RailFenceCipher {
+    String str = "WeFoundYouRun"; // default message
+    String en = "";
+    String[][] arr;
+    int rows=0;
+
+    public void explain() {
+        System.out.println("The Rail Fence Cipher is a simple transposition cipher that rearranges the letters of a message to make it harder to read.");
+        System.out.println("To encrypt, the message is written in a zigzag pattern across several “rails” (rows).");
+        System.out.println("Once the zigzag is complete, the letters are read row by row to form the encrypted text.");
+        System.out.println("For example, with 3 rails, the message is written diagonally down and up in a repeating pattern.");
+        System.out.println("This process changes the order of the characters without altering them, making the message appear scrambled.");
+        System.out.println("To decrypt, the receiver reconstructs the zigzag pattern and reads the letters in their original order.");
     }
-    public void encrpyt()
-    {
-        for(int i=0;i<str.length();i+=4)
-        {
-            s1+=str.charAt(i);
+
+    public void encrypt() {
+        arr = new String[rows][str.length()]; // Create a 2D array based on the rows and message length
+        for (int i = 0; i < rows; i++) {
+            Arrays.fill(arr[i], "_"); // Fill the array with underscores (empty spaces)
         }
-        for(int i=1;i<str.length();i+=2)
-        {
-            s2+=str.charAt(i);
-        }
-        for(int i=2;i<str.length();i+=4)
-        {
-            s3+=str.charAt(i);
-        }
-    }
-    public void save_arr()
-    {
-        int cc=0;
-        int max=18;
-        for(int i=0;i<3;i++)
-        {
-            for(int j=0;j<18;j++)
-            {
-                arr[i][j]="_";
+
+        int row = 0;
+        boolean goingDown = false;
+        for (int i = 0; i < str.length(); i++) {
+            arr[row][i] = String.valueOf(str.charAt(i));
+            if (row == 0 || row == rows - 1) {
+                goingDown = !goingDown;
             }
+            row += goingDown ? 1 : -1; // Move down or up in the zigzag pattern
         }
-        
-        for(int i=0;i<18;i+=4)
-        {
-            if(s1.length()==cc)
-            {
-                break;
-            }
-            arr[0][i]=s1.substring(cc,cc+1);
-            cc++;
-            
-        }
-        cc=0;
-        for(int i=1;i<18;i+=2)
-        {
-            if(s2.length()==cc)
-            {
-                break;
-            }
-            arr[1][i]=s2.substring(cc,cc+1);
-            cc++;
-            
-        }
-        cc=0;
-        for(int i=2;i<18;i+=4)
-        {
-            if(s3.length()==cc)
-            {
-                break;
-            }
-            arr[2][i]=s3.substring(cc,cc+1);
-            cc++;
-        }
-        
-        for(int i=0;i<3;i++)
-        {
-            for(int j=0;j<18;j++)
-            {
-                System.out.printf(arr[i][j]);
+
+        // Print the zigzag pattern
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < str.length(); j++) {
+                System.out.print(arr[i][j]);
             }
             System.out.println();
         }
-    }
-    public String decrypt()
-    {
-        String decrypt="";
-        for(int i=0;i<18;i++)//col
-        {
-            for(int j=0;j<3;j++)//row
-            {
-                decrypt+=arr[j][i];
+
+        // Read the message row by row
+        String encrypt="";
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < str.length(); j++) {
+                if (!arr[i][j].equals("_")) {
+                    encrypt+=arr[i][j];
+                }
             }
         }
-        decrypt=decrypt.replace("_","");
-        return decrypt;
+
+        System.out.println("Encrypted text: " + encrypt);
     }
-    public static void main()
-    {
-        RailFenceCipher ob=new RailFenceCipher();
-        ob.encrpyt();
-        ob.max();
-        ob.save_arr();
-        System.out.println(ob.decrypt());
+
+    public void decrypt() {
+    
+    String cipher = str;
+
+    for (int r = 2; r <= Math.min(cipher.length(), 10); r++) {
+        System.out.println("Trying rails = " + r);
+
+        // Step 1: Create pattern of zigzag positions
+        boolean goingDown = false;
+        int row = 0;
+
+        char[][] pattern = new char[r][cipher.length()];
+        for (char[] rowArr : pattern) {
+            Arrays.fill(rowArr, '\n');
+        }
+
+        for (int i = 0; i < cipher.length(); i++) {
+            pattern[row][i] = '*';
+
+            if (row == 0 || row == r - 1) goingDown = !goingDown;
+            row += goingDown ? 1 : -1;
+        }
+
+        // Step 2: Fill the pattern row‑wise with cipher text
+        int index = 0;
+        for (int i = 0; i < r; i++) {
+            for (int j = 0; j < cipher.length(); j++) {
+                if (pattern[i][j] == '*' && index < cipher.length()) {
+                    pattern[i][j] = cipher.charAt(index++);
+                }
+            }
+        }
+
+        // Step 3: Read the message in zigzag order
+        String decoded ="";
+        row = 0;
+        goingDown = false;
+
+        for (int i = 0; i < cipher.length(); i++) {
+            decoded+=(pattern[row][i]);
+
+            if (row == 0 || row == r - 1) goingDown = !goingDown;
+            row += goingDown ? 1 : -1;
+        }
+
+        System.out.println("Decrypted (rails=" + r + "): " + decoded);
+        System.out.println("----------------------------------");
     }
 }
+    }
